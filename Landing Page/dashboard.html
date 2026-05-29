@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Fredoka:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary:    #FBF9F4;
+      --bg-card:       #F3EFE0;
+      --accent:        #D4A373;
+      --accent-light:  #E8C99B;
+      --accent-dark:   #B8845A;
+      --sidebar-bg:    #2B2927;
+      --text-dark:     #2B2927;
+      --text-muted:    #7A7571;
+      --text-light:    #FBF9F4;
+      --border:        rgba(43,41,39,.08);
+      --shadow-sm:     0 2px 8px rgba(43,41,39,.06);
+      --shadow-md:     0 6px 24px rgba(43,41,39,.10);
+      --radius-sm:     10px;
+      --radius-md:     16px;
+      --radius-lg:     24px;
+      --sidebar-w:     220px;
+      --font-head:     'Righteous', cursive;
+      --font-body:     'Fredoka', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-primary);
+      color: var(--text-dark);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ──────────────────────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--sidebar-bg);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 20px;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      font-family: var(--font-head);
+      font-size: 22px;
+      color: var(--accent);
+      letter-spacing: .5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar-logo .logo-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--accent);
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo .logo-icon svg { display: block; }
+
+    .sidebar-tagline {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-bottom: 40px;
+      letter-spacing: .3px;
+      padding-left: 44px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #4A4745;
+      font-weight: 500;
+      margin-bottom: 8px;
+      padding-left: 14px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      color: #9A9491;
+      font-size: 14.5px;
+      font-weight: 400;
+      text-decoration: none;
+      transition: background .18s, color .18s;
+      cursor: pointer;
+    }
+
+    .nav-link svg { opacity: .7; flex-shrink: 0; }
+
+    .nav-link:hover {
+      background: rgba(255,255,255,.06);
+      color: var(--text-light);
+    }
+
+    .nav-link:hover svg { opacity: 1; }
+
+    .nav-link.active {
+      background: rgba(212,163,115,.15);
+      color: var(--accent-light);
+      font-weight: 500;
+    }
+
+    .nav-link.active svg { opacity: 1; color: var(--accent); }
+
+    .sidebar-footer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,.07);
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      display: grid;
+      place-items: center;
+      font-family: var(--font-head);
+      font-size: 15px;
+      color: white;
+      flex-shrink: 0;
+      border: 2px solid rgba(212,163,115,.35);
+    }
+
+    .avatar-info { overflow: hidden; }
+
+    .avatar-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .avatar-role {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ── Main Canvas ──────────────────────────────────────────────────── */
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top Bar ──────────────────────────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 36px 0;
+    }
+
+    .topbar-greeting {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background .15s;
+      color: var(--text-muted);
+    }
+
+    .topbar-btn:hover { background: #E8E0CC; }
+
+    /* ── Section Wrappers ─────────────────────────────────────────────── */
+    .content {
+      padding: 28px 36px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    .section-header {
+      margin-bottom: 20px;
+    }
+
+    .section-eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 26px;
+      color: var(--text-dark);
+      line-height: 1.15;
+    }
+
+    .section-sub {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-top: 5px;
+      font-weight: 400;
+    }
+
+    /* ── Image Placeholder ────────────────────────────────────────────── */
+    .img-placeholder {
+      background: linear-gradient(135deg, #EDE7D3 0%, #E0D8C4 100%);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .img-placeholder::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 14px,
+        rgba(212,163,115,.08) 14px,
+        rgba(212,163,115,.08) 15px
+      );
+    }
+
+    .img-placeholder svg {
+      position: relative;
+      z-index: 1;
+      color: var(--accent);
+      opacity: .4;
+    }
+
+    /* ── Section 1: Dashboard Hub ─────────────────────────────────────── */
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow .2s, transform .2s;
+    }
+
+    .metric-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .metric-card-img {
+      height: 130px;
+      width: 100%;
+    }
+
+    .metric-card-body {
+      padding: 16px 18px 18px;
+    }
+
+    .metric-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+
+    .badge-active   { background: rgba(83,185,107,.12); color: #3A9E54; }
+    .badge-live     { background: rgba(212,163,115,.15); color: #B8845A; }
+    .badge-current  { background: rgba(122,117,113,.12); color: var(--text-muted); }
+    .badge-updated  { background: rgba(100,149,237,.12); color: #4A7ED0; }
+
+    .metric-name {
+      font-family: var(--font-head);
+      font-size: 17px;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .metric-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-weight: 400;
+      line-height: 1.5;
+    }
+
+    /* Decorative chart mini inside card images */
+    .card-visual {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 5px;
+      padding: 16px 20px 10px;
+    }
+
+    .bar {
+      flex: 1;
+      border-radius: 5px 5px 0 0;
+      background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 100%);
+      opacity: .55;
+      transition: opacity .2s;
+    }
+
+    .metric-card:hover .bar { opacity: .8; }
+
+    .donut-wrap {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+    }
+
+    .line-wrap {
+      width: 100%;
+      height: 100%;
+      padding: 16px;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    /* ── Section 2: Analytics ─────────────────────────────────────────── */
+    .analytics-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .analytics-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: none;
+      transition: all .18s;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--accent);
+      color: var(--accent-dark);
+    }
+
+    .btn-outline:hover {
+      background: rgba(212,163,115,.12);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-accent:hover {
+      background: var(--accent-dark);
+    }
+
+    .chart-placeholder {
+      height: 280px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .chart-inner {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ── Section 3: Recent Events ─────────────────────────────────────── */
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .event-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      display: flex;
+      transition: box-shadow .2s, transform .2s;
+    }
+
+    .event-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .event-text {
+      flex: 1;
+      padding: 22px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .event-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--accent-dark);
+      background: rgba(212,163,115,.15);
+      padding: 3px 9px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      width: fit-content;
+    }
+
+    .event-title {
+      font-family: var(--font-head);
+      font-size: 16px;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .event-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      flex: 1;
+      margin-bottom: 14px;
+    }
+
+    .event-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--accent-dark);
+      text-decoration: none;
+      transition: gap .15s;
+    }
+
+    .event-link:hover { gap: 8px; }
+
+    .event-img {
+      width: 140px;
+      flex-shrink: 0;
+    }
+
+    /* ── Section 4: Footer ────────────────────────────────────────────── */
+    .footer {
+      margin-top: 48px;
+      background: var(--sidebar-bg);
+      color: var(--text-light);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+
+    .footer-inner {
+      padding: 44px 36px 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 32px;
+    }
+
+    .footer-brand {}
+
+    .footer-logo {
+      font-family: var(--font-head);
+      font-size: 20px;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 10px;
+    }
+
+    .footer-logo-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+    }
+
+    .footer-address {
+      font-size: 12.5px;
+      color: #9A9491;
+      line-height: 1.7;
+      font-weight: 400;
+      margin-bottom: 16px;
+    }
+
+    .footer-contact-link {
+      display: block;
+      font-size: 12.5px;
+      color: #9A9491;
+      text-decoration: none;
+      margin-bottom: 3px;
+      transition: color .15s;
+    }
+
+    .footer-contact-link:hover { color: var(--accent-light); }
+
+    .social-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .social-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      display: grid;
+      place-items: center;
+      color: #9A9491;
+      text-decoration: none;
+      transition: background .15s, color .15s;
+    }
+
+    .social-btn:hover {
+      background: rgba(212,163,115,.2);
+      color: var(--accent-light);
+    }
+
+    .footer-col-title {
+      font-family: var(--font-head);
+      font-size: 13px;
+      color: #BCBAB8;
+      margin-bottom: 14px;
+      letter-spacing: .4px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: #9A9491;
+      text-decoration: none;
+      transition: color .15s;
+      font-weight: 400;
+    }
+
+    .footer-links a:hover { color: var(--accent-light); }
+
+    .footer-bottom {
+      margin-top: 36px;
+      padding: 18px 36px;
+      border-top: 1px solid rgba(255,255,255,.07);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: #5A5856;
+    }
+
+    .footer-legal {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-legal a {
+      font-size: 12px;
+      color: #5A5856;
+      text-decoration: none;
+      transition: color .15s;
+    }
+
+    .footer-legal a:hover { color: var(--text-muted); }
+
+    /* ── Responsive ───────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .sidebar { width: 64px; padding: 24px 12px; }
+      .sidebar-tagline, .avatar-info, .nav-link span, .sidebar-logo span { display: none; }
+      .sidebar-logo { gap: 0; }
+      .nav-link { justify-content: center; padding: 11px; }
+      .sidebar-footer { justify-content: center; }
+      .hub-grid, .events-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+      .content { padding: 20px 20px 0; }
+      .topbar { padding: 20px 20px 0; }
+    }
+
+    @media (max-width: 600px) {
+      .footer-inner { grid-template-columns: 1fr; }
+      .event-card { flex-direction: column; }
+      .event-img { width: 100%; height: 140px; }
+      .analytics-header { flex-direction: column; }
+    }
+
+    /* ── Scroll padding for anchors ───────────────────────────────────── */
+    section { scroll-margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ SIDEBAR -->
+<aside class="sidebar" role="complementary" aria-label="Main navigation">
+  <div class="sidebar-logo">
+    <div class="logo-icon">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <rect x="2" y="9" width="4" height="7" rx="1" fill="white"/>
+        <rect x="7" y="5" width="4" height="11" rx="1" fill="white" opacity=".8"/>
+        <rect x="12" y="2" width="4" height="14" rx="1" fill="white" opacity=".6"/>
+      </svg>
+    </div>
+    <span>Metrik</span>
+  </div>
+  <p class="sidebar-tagline">Creative Project Performance</p>
+
+  <nav class="sidebar-nav" aria-label="Primary">
+    <p class="nav-label">Menu</p>
+    <a href="#hub" class="nav-link active" aria-current="page">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="#analytics" class="nav-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="3"/><line x1="8" y1="16" x2="8" y2="12"/><line x1="12" y1="16" x2="12" y2="8"/><line x1="16" y1="16" x2="16" y2="14"/>
+      </svg>
+      <span>Analytics</span>
+    </a>
+    <a href="#events" class="nav-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+      </svg>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="avatar" aria-label="User avatar">AK</div>
+    <div class="avatar-info">
+      <div class="avatar-name">Alex Kim</div>
+      <div class="avatar-role">Admin</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════════════ MAIN -->
+<main class="main">
+
+  <header class="topbar">
+    <p class="topbar-greeting">Good morning, Alex ☀️</p>
+    <div class="topbar-actions">
+      <button class="topbar-btn" aria-label="Search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="topbar-btn" aria-label="Notifications">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ── Section 1: Dashboard Hub ────────────────────────────────── -->
+    <section id="hub" aria-label="Dashboard Hub">
+      <div class="section-header">
+        <p class="section-eyebrow">Overview</p>
+        <h1 class="section-title">Dashboard Hub</h1>
+        <p class="section-sub">Your creative project performance at a glance</p>
+      </div>
+
+      <div class="hub-grid">
+
+        <!-- Card 1: Total Requests -->
+        <article class="metric-card">
+          <div class="metric-card-img img-placeholder">
+            <div class="card-visual">
+              <div class="bar" style="height:55%"></div>
+              <div class="bar" style="height:72%"></div>
+              <div class="bar" style="height:48%"></div>
+              <div class="bar" style="height:88%"></div>
+              <div class="bar" style="height:65%"></div>
+              <div class="bar" style="height:95%"></div>
+              <div class="bar" style="height:74%"></div>
+              <div class="bar" style="height:82%"></div>
+            </div>
+          </div>
+          <div class="metric-card-body">
+            <span class="metric-badge badge-active">
+              <svg width="7" height="7" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#3A9E54"/></svg>
+              Action
+            </span>
+            <h2 class="metric-name">Total Requests</h2>
+            <p class="metric-desc">1.2M requests processed this month with sustained growth across all regions.</p>
+          </div>
+        </article>
+
+        <!-- Card 2: System Uptime -->
+        <article class="metric-card">
+          <div class="metric-card-img img-placeholder">
+            <div class="donut-wrap">
+              <svg width="90" height="90" viewBox="0 0 90 90" style="position:relative;z-index:1">
+                <circle cx="45" cy="45" r="34" fill="none" stroke="rgba(212,163,115,.2)" stroke-width="10"/>
+                <circle cx="45" cy="45" r="34" fill="none" stroke="var(--accent)" stroke-width="10"
+                  stroke-dasharray="213.6" stroke-dashoffset="6.4"
+                  stroke-linecap="round" transform="rotate(-90 45 45)" opacity=".7"/>
+                <text x="45" y="49" text-anchor="middle" font-family="Righteous,sans-serif" font-size="13" fill="#2B2927" opacity=".7">99.97%</text>
+              </svg>
+            </div>
+          </div>
+          <div class="metric-card-body">
+            <span class="metric-badge badge-live">
+              <svg width="7" height="7" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#D4A373"/></svg>
+              Live
+            </span>
+            <h2 class="metric-name">System Uptime</h2>
+            <p class="metric-desc">99.97% availability maintained consistently across all infrastructure.</p>
+          </div>
+        </article>
+
+        <!-- Card 3: Active Users -->
+        <article class="metric-card">
+          <div class="metric-card-img img-placeholder">
+            <div class="card-visual" style="align-items:center;gap:8px">
+              <svg width="80" height="70" viewBox="0 0 80 70" style="position:relative;z-index:1;opacity:.5">
+                <circle cx="20" cy="22" r="10" fill="var(--accent)"/>
+                <circle cx="40" cy="22" r="10" fill="var(--accent-dark)"/>
+                <circle cx="60" cy="22" r="10" fill="var(--accent-light)"/>
+                <path d="M4 52 Q20 40 36 52 Q20 64 4 52Z" fill="var(--accent)" opacity=".6"/>
+                <path d="M24 52 Q40 40 56 52 Q40 64 24 52Z" fill="var(--accent-dark)" opacity=".6"/>
+                <path d="M44 52 Q60 40 76 52 Q60 64 44 52Z" fill="var(--accent-light)" opacity=".6"/>
+              </svg>
+            </div>
+          </div>
+          <div class="metric-card-body">
+            <span class="metric-badge badge-current">
+              <svg width="7" height="7" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#7A7571"/></svg>
+              Current
+            </span>
+            <h2 class="metric-name">Active Users Online</h2>
+            <p class="metric-desc">847 users connected right now, up 12% from yesterday's peak session.</p>
+          </div>
+        </article>
+
+        <!-- Card 4: Data Sync -->
+        <article class="metric-card">
+          <div class="metric-card-img img-placeholder">
+            <div class="card-visual" style="align-items:center;justify-content:center">
+              <svg width="64" height="64" viewBox="0 0 64 64" style="position:relative;z-index:1;opacity:.5">
+                <path d="M32 8 L56 20 L56 44 L32 56 L8 44 L8 20 Z" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <path d="M32 8 L32 56" stroke="var(--accent)" stroke-width="1.5" opacity=".5"/>
+                <path d="M8 20 L56 20" stroke="var(--accent)" stroke-width="1.5" opacity=".5"/>
+                <path d="M8 44 L56 44" stroke="var(--accent)" stroke-width="1.5" opacity=".5"/>
+                <circle cx="32" cy="32" r="5" fill="var(--accent-dark)"/>
+              </svg>
+            </div>
+          </div>
+          <div class="metric-card-body">
+            <span class="metric-badge badge-updated">
+              <svg width="7" height="7" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#4A7ED0"/></svg>
+              Updated
+            </span>
+            <h2 class="metric-name">Data Sync Status</h2>
+            <p class="metric-desc">All sources synchronised within seconds. Last full sync completed 3 min ago.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ── Section 2: Analytics ────────────────────────────────────── -->
+    <section id="analytics" aria-label="Analytics">
+      <div class="analytics-header">
+        <div>
+          <p class="section-eyebrow">Analytics</p>
+          <h2 class="section-title">Performance trends over time</h2>
+          <p class="section-sub">Watch your metrics evolve. Updated as events happen.</p>
+        </div>
+        <div class="analytics-actions">
+          <button class="btn btn-outline">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+          <button class="btn btn-accent">
+            Refresh
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="chart-placeholder">
+        <svg class="chart-inner" viewBox="0 0 900 280" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#D4A373" stop-opacity=".25"/>
+              <stop offset="100%" stop-color="#D4A373" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="areaGrad2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#B8845A" stop-opacity=".15"/>
+              <stop offset="100%" stop-color="#B8845A" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <!-- Grid lines -->
+          <line x1="60" y1="30" x2="880" y2="30" stroke="#E0D8C4" stroke-width="1"/>
+          <line x1="60" y1="80" x2="880" y2="80" stroke="#E0D8C4" stroke-width="1"/>
+          <line x1="60" y1="130" x2="880" y2="130" stroke="#E0D8C4" stroke-width="1"/>
+          <line x1="60" y1="180" x2="880" y2="180" stroke="#E0D8C4" stroke-width="1"/>
+          <line x1="60" y1="230" x2="880" y2="230" stroke="#E0D8C4" stroke-width="1"/>
+          <!-- Y-axis labels -->
+          <text x="50" y="34" text-anchor="end" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">100k</text>
+          <text x="50" y="84" text-anchor="end" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">80k</text>
+          <text x="50" y="134" text-anchor="end" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">60k</text>
+          <text x="50" y="184" text-anchor="end" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">40k</text>
+          <text x="50" y="234" text-anchor="end" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">20k</text>
+          <!-- X-axis labels -->
+          <text x="115" y="260" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">Jan</text>
+          <text x="228" y="260" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">Feb</text>
+          <text x="341" y="260" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">Mar</text>
+          <text x="454" y="260" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">Apr</text>
+          <text x="567" y="260" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">May</text>
+          <text x="680" y="260" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">Jun</text>
+          <text x="793" y="260" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">Jul</text>
+          <!-- Area fill 1 -->
+          <path d="M60 200 C115 190 170 160 228 140 C286 120 340 150 400 110 C460 70 512 80 567 60 C622 40 680 55 737 45 C793 35 840 40 880 30 L880 230 L60 230 Z"
+            fill="url(#areaGrad)"/>
+          <!-- Area fill 2 -->
+          <path d="M60 220 C115 215 170 200 228 190 C286 180 340 185 400 170 C460 155 512 160 567 140 C622 120 680 130 737 115 C793 100 840 105 880 90 L880 230 L60 230 Z"
+            fill="url(#areaGrad2)"/>
+          <!-- Line 1 -->
+          <path d="M60 200 C115 190 170 160 228 140 C286 120 340 150 400 110 C460 70 512 80 567 60 C622 40 680 55 737 45 C793 35 840 40 880 30"
+            fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Line 2 -->
+          <path d="M60 220 C115 215 170 200 228 190 C286 180 340 185 400 170 C460 155 512 160 567 140 C622 120 680 130 737 115 C793 100 840 105 880 90"
+            fill="none" stroke="#B8845A" stroke-width="1.5" stroke-dasharray="6 3" stroke-linecap="round" opacity=".6"/>
+          <!-- Dots on line 1 -->
+          <circle cx="228" cy="140" r="4" fill="white" stroke="var(--accent)" stroke-width="2"/>
+          <circle cx="400" cy="110" r="4" fill="white" stroke="var(--accent)" stroke-width="2"/>
+          <circle cx="567" cy="60"  r="4" fill="var(--accent)" stroke="white" stroke-width="2"/>
+          <circle cx="737" cy="45"  r="4" fill="white" stroke="var(--accent)" stroke-width="2"/>
+          <!-- Tooltip -->
+          <rect x="520" y="28" width="88" height="36" rx="7" fill="#2B2927" opacity=".88"/>
+          <text x="564" y="48" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="12" fill="white" font-weight="500">May · 62.4k</text>
+          <polygon points="560,64 568,64 564,70" fill="#2B2927" opacity=".88"/>
+          <!-- Legend -->
+          <rect x="700" y="14" width="10" height="3" rx="1" fill="var(--accent)"/>
+          <text x="714" y="19" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">Requests</text>
+          <line x1="700" y1="28" x2="710" y2="28" stroke="#B8845A" stroke-width="1.5" stroke-dasharray="4 2"/>
+          <text x="714" y="31" font-family="Fredoka,sans-serif" font-size="11" fill="#7A7571">Sessions</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ── Section 3: Recent Events ───────────────────────────────── -->
+    <section id="events" aria-label="Recent Events">
+      <div class="section-header">
+        <p class="section-eyebrow">Activity</p>
+        <h2 class="section-title">Recent Events</h2>
+        <p class="section-sub">Everything that happened in your workspace</p>
+      </div>
+
+      <div class="events-grid">
+
+        <!-- Event 1 -->
+        <article class="event-card">
+          <div class="event-text">
+            <div>
+              <span class="event-tag">Recent</span>
+              <h3 class="event-title">Activity Log</h3>
+              <p class="event-desc">See all transactions and changes made across your workspace, including automated pipeline runs and manual edits.</p>
+            </div>
+            <a href="#" class="event-link">
+              View
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+          <div class="event-img img-placeholder">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </div>
+        </article>
+
+        <!-- Event 2 -->
+        <article class="event-card">
+          <div class="event-text">
+            <div>
+              <span class="event-tag">Summary</span>
+              <h3 class="event-title">Performance Metrics</h3>
+              <p class="event-desc">A snapshot of how your system is running right now, covering response times, error rates, and resource utilisation.</p>
+            </div>
+            <a href="#" class="event-link">
+              View
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+          <div class="event-img img-placeholder">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <!-- ── Footer ─────────────────────────────────────────────────────── -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-inner">
+
+      <!-- Brand col -->
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="footer-logo-icon">
+            <svg width="15" height="15" viewBox="0 0 18 18" fill="none">
+              <rect x="2" y="9" width="4" height="7" rx="1" fill="white"/>
+              <rect x="7" y="5" width="4" height="11" rx="1" fill="white" opacity=".8"/>
+              <rect x="12" y="2" width="4" height="14" rx="1" fill="white" opacity=".6"/>
+            </svg>
+          </div>
+          Metrik
+        </div>
+        <address class="footer-address" style="font-style:normal">
+          Level 1, 12 Sample St<br/>
+          Sydney NSW 2000<br/>
+          Australia
+        </address>
+        <a href="tel:+61280001234" class="footer-contact-link">+61 2 8000 1234</a>
+        <a href="mailto:hello@metrik.io" class="footer-contact-link">hello@metrik.io</a>
+        <div class="social-row" aria-label="Social media">
+          <!-- Instagram -->
+          <a href="#" class="social-btn" aria-label="Instagram">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <!-- Twitter/X -->
+          <a href="#" class="social-btn" aria-label="X / Twitter">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <!-- LinkedIn -->
+          <a href="#" class="social-btn" aria-label="LinkedIn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <!-- YouTube -->
+          <a href="#" class="social-btn" aria-label="YouTube">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.4 19.54C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>
+          </a>
+          <!-- GitHub -->
+          <a href="#" class="social-btn" aria-label="GitHub">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Links col 1 -->
+      <div>
+        <p class="footer-col-title">Company</p>
+        <ul class="footer-links">
+          <li><a href="#">About us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Press kit</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Links col 2 -->
+      <div>
+        <p class="footer-col-title">Product</p>
+        <ul class="footer-links">
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">API Access</a></li>
+          <li><a href="#">Support</a></li>
+          <li><a href="#">Status page</a></li>
+          <li><a href="#">Changelog</a></li>
+        </ul>
+      </div>
+
+      <!-- Links col 3 -->
+      <div>
+        <p class="footer-col-title">Community</p>
+        <ul class="footer-links">
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Partners</a></li>
+          <li><a href="#">Developers</a></li>
+          <li><a href="#">Roadmap</a></li>
+          <li><a href="#">Newsletter</a></li>
+        </ul>
+      </div>
+
+    </div><!-- /footer-inner -->
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Metrik Dashboard. All rights reserved.</p>
+      <nav class="footer-legal" aria-label="Legal">
+        <a href="#">Privacy policy</a>
+        <a href="#">Terms of service</a>
+        <a href="#">Cookie settings</a>
+      </nav>
+    </div>
+  </footer>
+
+</main>
+<script>
+  const sidebarLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+
+  sidebarLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      sidebarLinks.forEach((item) => {
+        item.classList.remove('active');
+        item.removeAttribute('aria-current');
+      });
+
+      link.classList.add('active');
+      link.setAttribute('aria-current', 'page');
+    });
+  });
+</script>
+</body>
+</html>
